@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>GREEN API Interface</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f3f3f3;
+        }
+
+        .container {
+            width: 920px;
+            margin: 40px auto;
+            display: flex;
+            gap: 20px;
+        }
+
+        .left {
+            width: 330px;
+        }
+
+        .right {
+            flex: 1;
+        }
+
+        input,
+        textarea,
+        button {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            resize: none;
+        }
+
+        button {
+            border: 1px solid #999;
+            background: #eaeaea;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #ddd;
+        }
+
+        #output {
+            height: 440px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="left">
+
+            <input id="apiUrl" placeholder="https://api.green-api.com">
+            <input id="idInstance" placeholder="idInstance">
+            <input id="apiToken" placeholder="ApiTokenInstance">
+
+            <button onclick="getSettings()">getSettings</button>
+            <button onclick="getState()">getStateInstance</button>
+
+            <input id="chatIdMsg" placeholder="77771234567">
+            <textarea id="messageText" rows="3">Hello world!</textarea>
+
+            <button onclick="sendMessage()">sendMessage</button>
+
+            <input id="chatIdFile" placeholder="77771234567">
+            <input id="fileUrl" placeholder="https://site.com/file.jpg">
+            <input id="fileName" placeholder="file.jpg">
+            <textarea id="caption" rows="2" placeholder="Optional caption"></textarea>
+
+            <button onclick="sendFile()">sendFileByUrl</button>
+
+        </div>
+
+        <div class="right">
+            <textarea id="output" readonly></textarea>
+        </div>
+
+    </div>
+
+    <script>
+        function buildUrl(method) {
+            return `${apiUrl.value}/waInstance${idInstance.value}/${method}/${apiToken.value}`;
+        }
+
+        async function showResponse(res) {
+            const data = await res.json();
+            output.value = JSON.stringify(data, null, 2);
+        }
+
+        async function getSettings() {
+            const res = await fetch(buildUrl("getSettings"));
+            showResponse(res);
+        }
+
+        async function getState() {
+            const res = await fetch(buildUrl("getStateInstance"));
+            showResponse(res);
+        }
+
+        async function sendMessage() {
+            const payload = {
+                chatId: chatIdMsg.value + "@c.us",
+                message: messageText.value
+            };
+
+            const res = await fetch(buildUrl("sendMessage"), {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            showResponse(res);
+        }
+
+        async function sendFile() {
+            const payload = {
+                chatId: chatIdFile.value + "@c.us",
+                urlFile: fileUrl.value,
+                fileName: fileName.value,
+                caption: caption.value || undefined
+            };
+
+            const res = await fetch(buildUrl("sendFileByUrl"), {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            showResponse(res);
+        }
+    </script>
+
+</body>
+
+</html>

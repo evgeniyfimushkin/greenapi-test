@@ -1,0 +1,11 @@
+green-api.fimushkin.site {
+
+	root * /srv
+	file_server
+
+	encode gzip
+
+	log {
+		output stdout
+	}
+}
